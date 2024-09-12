@@ -10,8 +10,27 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^4.15.3",
     "@astrojs/check": "^0.9.3",
-    "typescript": "^5.5.4"
+    "@astrojs/db": "^0.14.1",
+    "@astrojs/netlify": "^5.5.1",
+    "@astrojs/react": "^3.6.2",
+    "@astrojs/tailwind": "^5.1.0",
+    "@auth/core": "^0.32.0",
+    "@types/react": "^18.3.5",
+    "@types/react-dom": "^18.3.0",
+    "astro": "^4.15.3",
+    "auth-astro": "^4.1.2",
+    "bcryptjs": "^2.4.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "sweetalert2": "^11.13.2",
+    "swiper": "^11.1.12",
+    "tailwindcss": "^3.4.10",
+    "typescript": "^5.5.4",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/uuid": "^10.0.0"
   }
 }

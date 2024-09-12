@@ -1,16 +1,35 @@
 ---
+import { actions } from 'astro:actions';
+
+import MainLayout from '@/layouts/MainLayout.astro';
+
+import Pagination from '@/components/shared/Pagination.astro';
+import { ProductList } from '@/components/products/ProductList';
+
+// 'getSession()' permite obtener la sesión del usuario actual.
+// 'Astro.request' es un objeto que contiene la solicitud actual del usuario.
+// const session = await getSession(Astro.request);
+
+// 'Astro.url.searchParams' es un objeto que contiene los query string de la URL actual.
+const searchParams = Astro.url.searchParams;
+// Se obtiene el valor del parámetro 'page' de la URL actual, si no existe se asigna el valor 1. 
+const pageParam = Number(searchParams.get('page') ?? 1);
+
+const {data, error} = await actions.getProductsByPage({page: pageParam});
+if (error) {
+  return Astro.redirect('/');
+}
+
+const { products, totalPages } = data;
+// console.log(data);
+
 
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<MainLayout>
+  <h1 class="text-3xl">Listado de productos</h1>
+
+  <ProductList client:idle products={products}/>
+
+  <Pagination totalPages={totalPages}/>
+</MainLayout>

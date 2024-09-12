@@ -1,0 +1,58 @@
+import { column, defineDb, defineTable } from 'astro:db';
+
+//* Usuarios
+const User = defineTable({
+  columns: {
+    id: column.text({ primaryKey: true, unique: true }),
+    name: column.text(),
+    email: column.text({ unique: true }),
+    password: column.text(),
+    createdAt: column.date({ default: new Date() }),
+    role: column.text({ references: () => Role.columns.id}),
+  },
+});
+
+//* Roles 
+const Role = defineTable({
+  columns: {
+    id: column.text({ primaryKey: true, }),
+    name: column.text(),
+  },
+});
+
+//* Productos
+const Product = defineTable({
+  columns: {
+    id: column.text({ primaryKey: true, unique: true }),
+    description: column.text(),
+    gender: column.text(),
+    price: column.number(),
+    sizes: column.text(),
+    slug: column.text({unique: true}),
+    stock: column.number(),
+    tags: column.text(),
+    title: column.text(),
+    type: column.text(),
+
+    user: column.text({ references: () => User.columns.id }),
+  },
+}); 
+
+//* Imagen de productos
+const ProductImage = defineTable({
+  columns: {
+    id: column.text({ primaryKey: true, unique: true }),
+    image: column.text(),
+    productId: column.text({ references: () => Product.columns.id }),
+  },
+}); 
+
+// https://astro.build/db/config
+export default defineDb({
+  tables: {
+    User,
+    Role,
+    Product,
+    ProductImage,
+  }
+});
