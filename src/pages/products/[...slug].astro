@@ -13,19 +13,22 @@ if (error) {
 }
 
 const { product,images } = data;
-// console.log(data);
+
+const image = images[0].image.startsWith('http') 
+  ? images[0].image 
+  : `${import.meta.env.PUBLIC_URL}/images/products/${images}`;
 
 ---
 
 
 <MainLayout
   title={product.title}
-  description={product.description}
+  description={product.description} 
+  image={image}
   >
-  <!-- image={images[0]} -->
 
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
-    <ProductSlideshow images={images} />
+    <ProductSlideshow images={images.map(i => i.image)} />
 
     <section>
       <h2 class="text-2xl font-bold">{product.title}</h2>
@@ -60,52 +63,68 @@ const { product,images } = data;
 </MainLayout>
 
 <script>
-  const $sizeElements = document.querySelectorAll('[data-size]');
+  import { navigate } from "astro:transitions/client";
 
-  //* Evento que permite seleccionar una talla 
-  $sizeElements.forEach(($liElement) => {
-    $liElement.addEventListener('click', () => {
-      // Elimina la clase '.selected-size' de todos los elementos <li>
-      $sizeElements.forEach(($el) => $el.classList.remove('selected-size'));
+  import { itemsInCart } from "@/store";
 
-      // Agrega la clase '.selected-size' al elemento <li> seleccionado 
-      $liElement.classList.add('selected-size');
+  import { CartCookiesClient } from "@/utils";
 
-    });
-  });
-
-  const $quantityInput = document.querySelector('input[type="number"]') as HTMLInputElement;
-  const $productIdInput = document.querySelector('#product-id') as HTMLInputElement;
-  const [$decrementButton, $incrementButton ,$addToCardButton] = document.querySelectorAll('button');
-
-  let quantity = 1;
-
-  //* Evento que permite decrementar la cantidad de productos 
-  $decrementButton.addEventListener('click', () => {
-    // Decrementa la cantidad de productos, pero no puede ser menor a 1 
-    quantity = Math.max( quantity - 1, 1);
-    $quantityInput.value = quantity.toString();
-  });
-
-  //* Evento que permite incrementar la cantidad de productos
-  $incrementButton.addEventListener('click', () => {
-    // Incrementa la cantidad de productos, pero no puede ser mayor a 5
-    quantity = Math.min(quantity + 1,5);
-    $quantityInput.value = quantity.toString();
-  });
-
-  //* Evento que permite añadir un producto al carrito
-  $addToCardButton.addEventListener('click', () => {
-    const productId = $productIdInput.value;
-
-    const size = document.querySelector('.selected-size')?.textContent;
-    if (!size) return alert('Debes seleccionar una talla');
-
-    $addToCardButton.disabled = true;
+  // Este evento se dispara cuando la página se ha cargado completamente
+  document.addEventListener('astro:page-load',() => {
+    const $sizeElements = document.querySelectorAll('[data-size]');
     
-    const quantity = $quantityInput.value;
 
-    console.log({productId, size, quantity});
+    //* Evento que permite seleccionar una talla 
+    $sizeElements.forEach(($liElement) => {
+      $liElement.addEventListener('click', () => {
+        // Elimina la clase '.selected-size' de todos los elementos <li>
+        $sizeElements.forEach(($el) => $el.classList.remove('selected-size'));
+
+        // Agrega la clase '.selected-size' al elemento <li> seleccionado 
+        $liElement.classList.add('selected-size');
+
+      });
+    });
+
+    const $quantityInput = document.querySelector('input[type="number"]') as HTMLInputElement;
+    const $productIdInput = document.querySelector('#product-id') as HTMLInputElement;
+    const [$decrementButton, $incrementButton ,$addToCardButton] = document.querySelectorAll('button');
+    //* Si no existen los botones o el input, no se ejecuta el script 
+    if (!$incrementButton || !$quantityInput) return;
+
+    let quantity = 1;
+
+    //* Evento que permite decrementar la cantidad de productos 
+    $decrementButton.addEventListener('click', () => {
+      // Decrementa la cantidad de productos, pero no puede ser menor a 1 
+      quantity = Math.max( quantity - 1, 1);
+      $quantityInput.value = quantity.toString();
+    });
+
+    //* Evento que permite incrementar la cantidad de productos
+    $incrementButton.addEventListener('click', () => {
+      // Incrementa la cantidad de productos, pero no puede ser mayor a 5
+      quantity = Math.min(quantity + 1,5);
+      $quantityInput.value = quantity.toString();
+    });
+
+    //* Evento que permite añadir un producto al carrito
+    $addToCardButton.addEventListener('click', async() => {
+      const productId = $productIdInput.value;
+
+      const size = document.querySelector('.selected-size')?.textContent;
+      if (!size) return alert('Debes seleccionar una talla');
+
+
+      // Añade el producto al carrito y devuelve el carrito actualizado 
+      const cart = CartCookiesClient.addItem({productId, size, quantity});
+      // Setean la cantidad de productos en el carrito
+      itemsInCart.set(cart.length);
+
+      // Redirecciona al carrito de compras usando View Transitions
+      await navigate('/cart');
+      
+    });
   });
 </script>
 

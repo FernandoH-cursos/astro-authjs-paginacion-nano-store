@@ -61,8 +61,17 @@ export const getProductsByPage = defineAction({
     const { rows } = await db.run(productsQuery);
     // console.log(rows);
 
+    //* Nos permite agregar la imagen por defecto en caso de que no exista una imagen para el 
+    //* producto(evitamos el error de imagen no encontrada) 
+    const products = rows.map((product) => {
+      return {
+        ...product,
+        images: product.images ? product.images : "no-image.png",
+      };
+    }) as unknown as ProductWithImage[];
+
     return {
-      products: rows as unknown as ProductWithImage[],
+      products,
       totalPages,
     };
   },

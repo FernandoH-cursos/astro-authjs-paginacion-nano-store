@@ -43,13 +43,15 @@ const fullImages = images.map((image) => {
   import Swiper from 'swiper';
   import { Pagination } from 'swiper/modules';
 
-  const swiper = new Swiper('.swiper', {
+  // Este evento se dispara cuando la página se ha cargado completamente
+  document.addEventListener('astro:page-load',() => {
+    const swiper = new Swiper('.swiper', {
+      // If we need pagination
+      pagination: {
+        el: '.swiper-pagination',
+      },
 
-    // If we need pagination
-    pagination: {
-      el: '.swiper-pagination',
-    },
-
-    modules: [Pagination],
+      modules: [Pagination],
+    });
   });
 </script>

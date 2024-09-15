@@ -1,5 +1,11 @@
-import { loginUser, logout, registerUser } from './auth';
-import { getProductBySlug, getProductsByPage } from './products';
+import { loginUser, logout, registerUser } from "./auth";
+import { loadProductsFromCart } from "./cart";
+import {
+  createUpdateProduct,
+  deleteProductImage,
+  getProductBySlug,
+  getProductsByPage,
+} from "./products";
 
 export const server = {
   // actions
@@ -12,4 +18,9 @@ export const server = {
   // Products
   getProductsByPage,
   getProductBySlug,
+  createUpdateProduct,
+  deleteProductImage,
+
+  // Cart
+  loadProductsFromCart,
 };
